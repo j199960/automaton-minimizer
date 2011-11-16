@@ -21,6 +21,10 @@ public class Automata {
 		this.estadosDeAceptacion = estadosDeAceptacion;	
 	}
 	
+	// RJUA
+	// TODO verificar que se manden varios estados de aceptacion
+	//
+	
 	public Automata(ArrayList<Estado> estados,
 			ArrayList<String> alfabeto,
 			Estado estadoInicial,
@@ -46,5 +50,19 @@ public class Automata {
 	public Estado DameElEstado(String estimulo)
 	{
 		return estadoInicial;
+	}
+	
+	public ArrayList<Estado> DameEstados()
+	{
+		return this.estados;
+	
+	}
+	public int DameTamanoAlfateto()
+	{
+		return this.alfabeto.size();
+	}
+	public ArrayList<String> DameAlfabeto()
+	{
+		return this.alfabeto;
 	}
 }

@@ -31,5 +31,12 @@ public class Estado {
 	{
 		return this.transiciones;
 	}
+	
+	public String dameNombre()
+	{
+		return this.nombre;
+	}
+	
+
 
 }

@@ -35,5 +35,12 @@ public class Transicion {
 	{
 		return this.estadosDestino;
 	}
+	
+	public String dameEstimulo()
+	{
+		return this.estimulo;
+	}
+	
+	
 
 }
