@@ -24,7 +24,7 @@ public class ClasificadorTest {
 	
 	@Parameters
     public static Collection spreadsheetData() throws IOException {
-        return new AutomataBuilder("c:/temp/testdata.xls").getData();
+        return new AutomataBuilder("C:\\temp\\ClasificadorTestData.txt").getData();
     }
 
 	public ClasificadorTest(Automata inputAutomata, boolean esDeterminista)
