@@ -37,6 +37,19 @@ public class Estado {
 		return this.nombre;
 	}
 	
+	
+	public ArrayList<Estado> dameElSiguientesEstados(String estimulo)
+	{
+		for(int i = 0; i < this.transiciones.size(); i++)
+		{
+			if(transiciones.get(i).dameEstimulo().equalsIgnoreCase(estimulo))
+			{
+				return transiciones.get(i).dameEstadosDestinos();
+			}
+		}
+		return null;
+	}
+	
 
 
 }

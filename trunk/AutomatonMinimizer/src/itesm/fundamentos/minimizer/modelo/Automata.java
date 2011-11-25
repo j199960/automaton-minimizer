@@ -65,4 +65,9 @@ public class Automata {
 	{
 		return this.alfabeto;
 	}
+	
+	public Estado DameElEstadoInicial()
+	{
+		return this.estadoInicial;
+	}
 }
