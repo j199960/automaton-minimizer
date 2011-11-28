@@ -88,7 +88,25 @@ public class Estado {
 		return null;
 	}
 
-
+	public boolean buscaEstadoEnTransiciones(Estado estadoDestino, String simbolo)
+	{
+		boolean result = false;
+		
+		ArrayList<Transicion> listaTransiciones = this.dameTransiciones();
+		
+		for (int x = 0 ; x< listaTransiciones.size(); x++)
+		{
+			Transicion transicion = listaTransiciones.get(x);
+			
+			ArrayList<Estado> estados = transicion.dameEstadosDestinos();
+			if (estados.contains(estadoDestino) == true && transicion.dameEstimulo().equals(simbolo))
+			{
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
 	
 	public void imprimeEstado()
 	{
