@@ -288,12 +288,12 @@ public class Automata {
 			//temp.ind
 			if (nomDestino.contains(temp))
 			{
-				System.out.println("$ el nombre contiene :  " + temp);
+				//System.out.println("$ el nombre contiene :  " + temp);
 				result =true;
 			}
 			else
 			{
-				System.out.println("$ el nombre NO contiene :  " + temp);
+				//System.out.println("$ el nombre NO contiene :  " + temp);
 				result=false;
 				break;
 			}
@@ -372,7 +372,7 @@ public class Automata {
 				for (int y = 0; y < estado.dameTransiciones().size(); y ++)
 				{
 					Transicion transicion = estado.dameTransiciones().get(y);
-					if (transicion.dameEstimulo() == simbolo)
+					if (transicion.dameEstimulo().equals( simbolo))
 					{
 						//System.out.println("Se encontro transicion con estimulo " + transicion.dameEstimulo());
 						System.out.println(" **** nombre destino  " + transicion.dameEstadosDestinos().get(0).dameNombre());

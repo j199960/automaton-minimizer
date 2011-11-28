@@ -54,7 +54,7 @@ public class Convertidor {
 					// dos (o mas) estados diferentes)
 					//
 					
-					if(simbolo==thisEstado.dameTransiciones().get(y).dameEstimulo())
+					if(simbolo.equals(thisEstado.dameTransiciones().get(y).dameEstimulo()))
 					{
 						//System.out.println(" El simbolo de esta transicion es  " + thisEstado.dameTransiciones().get(y).dameEstimulo());
 						//System.out.println(" La lista de tansiciones es  " +estadoInicial.dameTransiciones().get(y).dameEstadosDestinos().size());						
@@ -203,7 +203,7 @@ public class Convertidor {
 						
 						System.out.println( transicion.dameEstimulo() + " -> ");
 						
-						if (simbolo == transicion.dameEstimulo())
+						if (simbolo.equals( transicion.dameEstimulo()) )
 						{
 						
 							for (int z = 0; z< estadosDestino.size(); z++)
@@ -289,7 +289,7 @@ public class Convertidor {
 									
 						}// if simbolo == transicion.dameEstimulo()
 						
-						if (simbolo == transicion.dameEstimulo())
+						if (simbolo.equals(transicion.dameEstimulo()))
 						{
 							System.out.println(" El estado " +estado.dameNombre()+ " tiene estas transiciones "+estado.dameTransiciones().size());
 							nuevasTransiciones.add(new Transicion (simbolo, tempEstado));

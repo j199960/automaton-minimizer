@@ -170,7 +170,7 @@ public class Utils {
             }
             Automata automata = new Automata(estados, alfabeto, inicial, estadosFinales);
             
-            automata = renombraALetras(automata);
+            //automata = renombraALetras(automata);
             
             ImprimeAutomata(automata);
             
@@ -307,11 +307,11 @@ public class Utils {
 			TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(document);
-			StreamResult result =  new StreamResult(new StringWriter());
+			StreamResult result =  new StreamResult(new File(fileName));
 			transformer.transform(source, result);
 			
-			String xmlString = result.getWriter().toString();
-			System.out.println(xmlString);
+			//String xmlString = result.getWriter().toString();
+			//System.out.println(xmlString);
 
 			
 		}catch (Exception err) {

@@ -19,8 +19,13 @@ public class AutomatonMinimizer {
 	 */
 	public static void main(String[] args) {
 		
-		Automata automataInicial = Utils.ParseFromJflapFormat("C:\\temp\\Tarea4_c.xml");
+		Automata automataInicial = Utils.ParseFromJflapFormat(args[0]);
 		
+		if(!Clasificador.EsDeterminista(automataInicial))
+		{
+			automataInicial.imprimeAutomata();
+			automataInicial = Convertidor.ConvierteloADeterminista(automataInicial);
+		}
 //		automataInicial.imprimeAutomata();
 		
 //		Convertidor.ConvierteloADeterminista(automataInicial);
@@ -28,7 +33,7 @@ public class AutomatonMinimizer {
 		Minimizador m = new Minimizador(automataInicial);
 		Automata automatafinal = m.Minimiza();
 		
-		Utils.CreateJFlapFormat("bla", automatafinal);
+		Utils.CreateJFlapFormat(args[0], automatafinal);
 		
 	}
 
