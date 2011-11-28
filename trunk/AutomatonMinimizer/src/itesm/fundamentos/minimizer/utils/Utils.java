@@ -3,10 +3,17 @@ package itesm.fundamentos.minimizer.utils;
 
 import java.util.ArrayList;
 import java.io.File;
+import java.io.StringWriter;
+
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException; 
 import itesm.fundamentos.minimizer.modelo.*;
@@ -197,6 +204,125 @@ public class Utils {
 		}
 		return null;
 	}
+	
+	
+	public static void CreateJFlapFormat(String fileName, Automata automata)
+	{
+		try
+		{
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			Document document = documentBuilder.newDocument();
+			Element rootElement = document.createElement("structure");
+			document.appendChild(rootElement);
+			Element em = document.createElement("type");
+			rootElement.appendChild(em);
+			em.appendChild(document.createTextNode("fa"));
+			Node am = document.createElement("automaton");
+			rootElement.appendChild(am);
+			
+			
+			//Imprimiendo estados
+			for(int i = 0; i < automata.DameEstados().size(); i++)
+			{
+				String nombre = automata.DameEstados().get(i).dameNombre();
+				Node st = document.createElement("state");
+				NamedNodeMap  mp = st.getAttributes();
+				Attr id = document.createAttribute("id");
+				Attr name = document.createAttribute("name");
+				id.setValue(nombre);
+				name.setValue(nombre);
+				mp.setNamedItem(id);
+				mp.setNamedItem(name);
+				am.appendChild(st);
+				if(automata.DameElEstadoInicial().equals(automata.DameEstados().get(i)))
+				{
+					Node init = document.createElement("initial");
+					st.appendChild(init);
+				}
+				if(automata.DameEstadosDeAceptacion().contains(automata.DameEstados().get(i)))
+				{
+					Node fin = document.createElement("final");
+					st.appendChild(fin);
+				}
+			}
+			
+			//Imprimiendo transiciones
+			for(int i = 0; i < automata.DameEstados().size(); i++)
+			{
+				Estado e = automata.DameEstados().get(i);
+				for(int j = 0; j< e.dameTransiciones().size(); j++)
+				{
+					Transicion transicion = e.dameTransiciones().get(j);
+					Node tr = document.createElement("transition");
+					am.appendChild(tr);
+					
+					Node from = document.createElement("from");
+					from.appendChild(document.createTextNode(e.dameNombre()));
+					
+					
+					Node to = document.createElement("to");
+					to.appendChild(document.createTextNode(transicion.dameEstadosDestinos().get(0).dameNombre()));
+					
+					Node rd = document.createElement("read");
+					rd.appendChild(document.createTextNode(transicion.dameEstimulo()));
+					
+					tr.appendChild(from);
+					tr.appendChild(to);
+					tr.appendChild(rd);
+				}
+				
+				//String nombre = automata.DameEstados().get(i).dameNombre();
+				//Node st = document.createElement("state");
+				//NamedNodeMap  mp = st.getAttributes();
+				//Attr id = document.createAttribute("id");
+				//Attr name = document.createAttribute("name");
+			//	id.setValue(nombre);
+		//		name.setValue(nombre);
+	//			mp.setNamedItem(id);
+		//		mp.setNamedItem(name);
+			//	am.appendChild(st);
+			}
+			
+			
+			
+			
+			
+			
+			
+			//st.appendChild(document.createAttribute("id"));
+			
+			//st.appendChild(document.createAttribute("id"));
+			//st.appendChild(document.createAttribute("name"));
+			
+			//Node tr = document.createElement("transition");
+			//am.appendChild(tr);
+			
+			
+			
+			TransformerFactory transformerFactory = 
+			TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(document);
+			StreamResult result =  new StreamResult(new StringWriter());
+			transformer.transform(source, result);
+			
+			String xmlString = result.getWriter().toString();
+			System.out.println(xmlString);
+
+			
+		}catch (Exception err) {
+	        System.out.println ("** Parsing error" + ", line " 
+	             + ((SAXParseException) err).getLineNumber () + ", uri " + ((SAXParseException) err).getSystemId ());
+	        System.out.println(" " + err.getMessage ());
+	        }catch (Throwable t) {
+	        t.printStackTrace ();
+	        }
+
+		
+		
+	}
+	
 	
 	public static void ImprimeAutomata(Automata automata)
 	{
