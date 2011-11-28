@@ -34,7 +34,7 @@ public class Minimizador {
 		
 		ConstruyeAutomata();
 			
-		return automata;
+		return automataFinal;
 	}
 
 	
@@ -92,27 +92,57 @@ public class Minimizador {
 	private void EliminaEstados()
 	{
 		this.tablaFinal.putAll(this.tablaInicial);
-		
-		for (Map.Entry<String, ArrayList<String>> elemento : tablaInicial.entrySet()) 
-		{
-			ArrayList<String> valores = elemento.getValue();
-			
-			for(int i = 0; i < valores.size(); i++)
+		ArrayList<String> tempEliminacion = new ArrayList<String>();
+		boolean again = false;
+		int tries = 0;
+		int tablaFinalSize = tablaFinal.size();
+		int tempSize = 0;
+		//do
+		//{
+			again = true;
+			while(again == true)
 			{
-				String par = valores.get(i);
-				for(int j = 0; j < this.estadosDeEliminacion.size(); j++)
+				//Obtengo el tamano de la tabla final antes de realizar eliminacion
+				tempSize = tablaFinal.size();
+			for (Map.Entry<String, ArrayList<String>> elemento : tablaInicial.entrySet()) 
+			{
+				ArrayList<String> valores = elemento.getValue();
+				
+				for(int i = 0; i < valores.size(); i++)
 				{
-					String valorDerecho = this.estadosDeEliminacion.get(j);
-					String[] temp  = valorDerecho.split(",");
-					String valorReves = temp[1] + "," + temp[0];
-					
-					if(par.equalsIgnoreCase(valorDerecho)||par.equalsIgnoreCase(valorReves))
+					String par = valores.get(i);
+					for(int j = 0; j < this.estadosDeEliminacion.size(); j++)
 					{
-						this.tablaFinal.remove(elemento.getKey());	
+						String valorDerecho = this.estadosDeEliminacion.get(j);
+						String[] temp  = valorDerecho.split(",");
+						String valorReves = temp[1] + "," + temp[0];
+						
+						if(par.equalsIgnoreCase(valorDerecho)||par.equalsIgnoreCase(valorReves))
+						{
+							this.tablaFinal.remove(elemento.getKey());
+							if(!tempEliminacion.contains(elemento.getKey()))
+							{
+								tempEliminacion.add(elemento.getKey());
+							}
+							//again = true;
+						}
+					}
+				}
+				for(int t = 0; t < tempEliminacion.size(); t++)
+				{
+					if(!estadosDeEliminacion.contains(tempEliminacion.get(t)))
+					{
+						estadosDeEliminacion.add(tempEliminacion.get(t));
 					}
 				}
 			}
-		}
+			if(tablaFinal.size() == tempSize)
+			{
+				again = false;
+			}
+			tries++;
+			}
+		//}while(again == true);
 	}
 	
 	private void ConstruyeAutomata()
@@ -123,6 +153,7 @@ public class Minimizador {
 		ArrayList<String> estadosOriginalesADesarrollar = new ArrayList<String>();
 		int id = 1;
 		Map <String, ArrayList<String>> tablaTemp = new HashMap<String, ArrayList<String>>();
+		boolean match = false;
 		
 		tablaTemp.putAll(tablaFinal);
 		
@@ -133,6 +164,9 @@ public class Minimizador {
 		//Tengo que ubicar los estados comunes y agruparlos
 		Iterator it = tablaFinal.keySet().iterator();
 		
+		
+		//Se utiliza un arreglo de enteros para poder agrupar
+		//los estados QUE SON COMPUESTOS y son resultado de la eliminacion
 		while(it.hasNext()) 
 		{ 
 			String key = (String) it.next(); 
@@ -148,6 +182,7 @@ public class Minimizador {
 						//Checamos si existe un Estado en comun
 						if(splittedKey[i].equalsIgnoreCase(nextSplittedKey[j]))
 						{
+							match = true;
 							listaDeEstadosAEliminar.add(nextKey);
 							
 							//OK tenemos un estado en comun, tenemos que "taggear" los elementos encontrados
@@ -171,6 +206,21 @@ public class Minimizador {
 					}
 				}
 			}
+			if(match == false)
+			{
+				for(int m = 0; m < splittedKey.length; m++)
+				{
+					int temp = Integer.parseInt(splittedKey[m]);
+					if(arregloDeEnteros[temp] == 0)
+					{
+						arregloDeEnteros[temp] = id;
+					}
+				}
+			}
+			else
+			{
+				match = false;
+			}
 			tablaFinal.remove(key);
 			for(int h = 0; h < listaDeEstadosAEliminar.size(); h++)
 			{
@@ -179,7 +229,12 @@ public class Minimizador {
 			it = tablaFinal.keySet().iterator(); 
 			id++;
 		}
-		System.out.println("Se encontraron " + id-- + " agrupaciones...");
+		System.out.println("Se encontraron " + --id + " agrupaciones...");
+		
+		
+		//Ya teniendo los estados cumpuestos agrupados, se procede 
+		//a buscar aquellos estados que no son parte de la tabla y por lo tanto
+		//son parte del AUTOMATA ORIGINAL
 		
 		for (Map.Entry<String, ArrayList<String>> elemento : tablaTemp.entrySet()) 
 		{
@@ -211,9 +266,14 @@ public class Minimizador {
 					String val = DameElId(arregloDeEnteros, valores.get(i));
 					if(val.startsWith("or"))
 					{
-						val = val.substring(val.lastIndexOf('r')+1);
+						//val = val.substring(val.lastIndexOf('r')+1);
+						//if(Integer.valueOf(val) <= id)
+						//{
+					//		arregloDeEnteros[Integer.valueOf(val)] = ++id;
+							//val = String.valueOf(id);
+				//		}
 						
-						estadosOriginalesADesarrollar.add(val);
+						estadosOriginalesADesarrollar.add(val.substring(val.lastIndexOf('r')+1));
 //						id++;
 //						val = String.valueOf(id);
 					}
@@ -222,28 +282,55 @@ public class Minimizador {
 				tablaMini.put(result, temp);
 			}
 		}
-		
-		//Si hubo estados originales a desarrollar...
-		if(estadosOriginalesADesarrollar.size() > 0)
-		{
-			for(int ori = 0; ori < estadosOriginalesADesarrollar.size(); ori++)
+		int tamanoEstadosOr = estadosOriginalesADesarrollar.size();
+		ArrayList<String> nuevosADesarrollar = new ArrayList<String>();
+		boolean again = true;
+		while(again == true)
+		{	
+			tamanoEstadosOr = estadosOriginalesADesarrollar.size();
+			//Si hubo estados originales a desarrollar...
+			if(estadosOriginalesADesarrollar.size() > 0)
 			{
-				Estado e = automata.DameEstados().get(Integer.valueOf(estadosOriginalesADesarrollar.get(ori)));
-				ArrayList<String> tp = new ArrayList<String>();
-				for(int alf = 0; alf < automata.DameTamanoAlfateto(); alf++)
+				for(int ori = 0; ori < estadosOriginalesADesarrollar.size(); ori++)
 				{
-					Transicion t = e.dameTransicion(automata.DameAlfabeto().get(alf));
-					if(t.dameEstadosDestinos().size() == 1)
+					Estado e = automata.DameEstados().get(Integer.valueOf(estadosOriginalesADesarrollar.get(ori)));
+					ArrayList<String> tp = new ArrayList<String>();
+					for(int alf = 0; alf < automata.DameTamanoAlfateto(); alf++)
 					{
-						int ir = automata.DameEstados().indexOf(t.dameEstadosDestinos().get(0));
-						String strid = DameElId(arregloDeEnteros, String.valueOf(ir));
-						tp.add(strid);
+						Transicion t = e.dameTransicion(automata.DameAlfabeto().get(alf));
+						if(t.dameEstadosDestinos().size() == 1)
+						{
+							int ir = automata.DameEstados().indexOf(t.dameEstadosDestinos().get(0));
+							String strid = DameElId(arregloDeEnteros, String.valueOf(ir));
+							if(strid.startsWith("or"))
+							{
+								if(!nuevosADesarrollar.contains(strid.substring(strid.lastIndexOf('r')+1)))
+								{
+									String var = strid.substring(strid.lastIndexOf('r')+1);
+									nuevosADesarrollar.add(var);
+								}
+							}
+							tp.add(strid);
+						}
+						
 					}
-					
+					tablaMini.put("or"+estadosOriginalesADesarrollar.get(ori), tp);
 				}
-				tablaMini.put(estadosOriginalesADesarrollar.get(ori), tp);
+				
+				for(int n = 0; n<nuevosADesarrollar.size(); n++)
+				{
+					if(!estadosOriginalesADesarrollar.contains(nuevosADesarrollar.get(n)))
+					{
+						estadosOriginalesADesarrollar.add(nuevosADesarrollar.get(n));
+					}
+				}
+				//Estado e = automata.DameEstados().indexOf(o)
 			}
-			//Estado e = automata.DameEstados().indexOf(o)
+			if(tamanoEstadosOr == estadosOriginalesADesarrollar.size())
+			{
+				again = false;
+			}
+			
 		}
 		
 		
@@ -260,7 +347,7 @@ public class Minimizador {
 			tempE = new Estado(elemento.getKey());
 			estados.add(tempE);
 			
-			ArrayList<String> estadoDestino = elemento.getValue();
+			//ArrayList<String> estadoDestino = elemento.getValue();
 			/*for(int iDestino = 0; iDestino < estadoDestino.size(); iDestino++)
 			{
 				String idDest = DameElId(arregloDeEnteros, estadoDestino.get(iDestino));
@@ -277,7 +364,17 @@ public class Minimizador {
 			ArrayList<String> estadoDestino = elemento.getValue();
 			for(int iDestino = 0; iDestino < estadoDestino.size(); iDestino++)
 			{
-				String idDest = DameElId(arregloDeEnteros, estadoDestino.get(iDestino));
+				String idDest = null;
+				if(estadoDestino.get(iDestino).startsWith("or"))
+				{
+					idDest = estadoDestino.get(iDestino);
+				}
+				else
+				{
+					//NO ES UN ESTADO ORIGINAL, ENTONES PODEMOS USAR EL ID DIRECTAMENTE
+					idDest = estadoDestino.get(iDestino);
+					//idDest = DameElId(arregloDeEnteros, estadoDestino.get(iDestino));
+				}
 				Estado tmp = Utils.DameEstadoConNombre(estados, idDest);
 				tempE.agregaTransicion(new Transicion (alfabeto.get(iDestino), tmp));
 				
@@ -346,7 +443,7 @@ public class Minimizador {
 			resultado1 = String.valueOf(arregloDeEnteros[result]);
 			if(Integer.valueOf(resultado1) == 0)
 			{
-				resultado1 = split[0];
+				resultado1 = "or" + split[0];
 			}
 			return resultado1;
 		}
