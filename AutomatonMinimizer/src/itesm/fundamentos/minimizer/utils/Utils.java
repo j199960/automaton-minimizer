@@ -194,6 +194,169 @@ public class Utils {
 		
 	}
 	
+	
+
+	public static Automata ParseFromJflapFormatConTransicionesSeparadas(String fileName)
+	{
+		try {
+
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse (new File(fileName));
+            ArrayList<Estado> estados = new ArrayList<Estado>();
+            ArrayList<Transicion> transiciones = new ArrayList<Transicion>();
+            String nombreEstadoInicial = null;
+            ArrayList<String> nombresEstadosFinales = new ArrayList<String>();
+            ArrayList<String> alfabeto = new ArrayList<String>();
+            
+
+            // normalize text representation
+            doc.getDocumentElement ().normalize ();
+            System.out.println ("Root element of the doc is " + 
+                 doc.getDocumentElement().getNodeName());
+
+            NodeList listaDeAutomatas = doc.getElementsByTagName("automaton");
+            System.out.println("Total de automatas : " + listaDeAutomatas.getLength());
+            
+            NodeList listaDeEstados = doc.getElementsByTagName("state");
+            
+            NodeList listaDeTransiciones = doc.getElementsByTagName("transition");
+            
+            System.out.println("Total de estados : " + listaDeEstados.getLength());
+            
+            for(int s = 0; s<listaDeEstados.getLength(); s++)
+            {
+            	Node nodo = listaDeEstados.item(s);
+            	NamedNodeMap atributos = nodo.getAttributes();
+            	Node nombre = atributos.getNamedItem("id");
+            	String NombreEstado = nombre.getNodeValue();
+            	Estado estado = new Estado(NombreEstado);
+            	estados.add(estado);
+            	
+            	if(nodo.getNodeType() == Node.ELEMENT_NODE)
+            	{
+            		Element elemento = (Element)nodo;
+            		
+            		NodeList estadoInicial = elemento.getElementsByTagName("initial");
+            		NodeList estadosFinales = elemento.getElementsByTagName("final");
+            		if(estadoInicial.getLength() == 1)
+            		{
+            			nombreEstadoInicial = NombreEstado;
+            		}
+            		if(estadosFinales.getLength() == 1)
+            		{
+            			nombresEstadosFinales.add(NombreEstado);
+            		}
+            	}
+            	
+            	
+            	
+            }
+            
+            for(int t = 0; t < listaDeTransiciones.getLength(); t++)
+            {
+            	Node nodoTransicion = listaDeTransiciones.item(t);
+            	if(nodoTransicion.getNodeType() == Node.ELEMENT_NODE)
+            	{
+            		Element elementoTransicion = (Element)nodoTransicion;
+            		
+            		NodeList fromList = elementoTransicion.getElementsByTagName("from");
+            		Element estadoOrigen = (Element)fromList.item(0);
+            		
+            		NodeList nodoEstadoOrigen = estadoOrigen.getChildNodes();
+            		String strFrom = nodoEstadoOrigen.item(0).getNodeValue();
+            		
+            		NodeList toList = elementoTransicion.getElementsByTagName("to");
+            		Element estadoDestino = (Element)toList.item(0);
+            		
+            		NodeList nodoEstadoDestino = estadoDestino.getChildNodes();
+            		String strTo = nodoEstadoDestino.item(0).getNodeValue();
+            		
+            		NodeList readList = elementoTransicion.getElementsByTagName("read");
+            		Element estimulos = (Element)readList.item(0);
+            		
+            		NodeList listaDeEstimulos = estimulos.getChildNodes();
+            		
+            		String[] arregloDeinput;
+            		
+            		if(listaDeEstimulos.item(0) == null)
+            		{
+            			arregloDeinput = new String[1];
+            			arregloDeinput[0] = "E";
+            		}
+            		else
+            		{
+	            		String strEstimulos = listaDeEstimulos.item(0).getNodeValue();
+	            		arregloDeinput = strEstimulos.split(",");
+	            	}
+            		
+            		Estado  e1  = DameEstadoConNombre(estados, strFrom);
+            		Estado e2 = DameEstadoConNombre(estados, strTo);
+            		for(int index = 0; index<arregloDeinput.length; index++)
+            		{
+            			if(!alfabeto.contains(arregloDeinput[index]))
+            			{
+            				alfabeto.add(arregloDeinput[index]);
+            				
+            			}
+            			
+            			e1.agregaTransicion(new Transicion(arregloDeinput[index], e2));
+            		}
+            		
+            		
+            		/*
+            		e1.dameTransicion(estimulo);
+            		*/
+            		
+            		
+          
+            		 
+            		
+            		
+            		
+            		
+            		int i = t+2;
+            		
+            		
+            	}
+            }
+            
+            Estado inicial = DameEstadoConNombre(estados, nombreEstadoInicial);
+            ArrayList<Estado> estadosFinales = new ArrayList<Estado>();
+            
+            for(int indiceEstadosFinales = 0; indiceEstadosFinales<nombresEstadosFinales.size(); indiceEstadosFinales++)
+            {
+            	estadosFinales.add(DameEstadoConNombre(estados, nombresEstadosFinales.get(indiceEstadosFinales)));
+            }
+            Automata automata = new Automata(estados, alfabeto, inicial, estadosFinales);
+            
+            //automata = renombraALetras(automata);
+            
+            ImprimeAutomata(automata);
+            
+            return automata;
+            
+                    }catch (SAXParseException err) {
+        System.out.println ("** Parsing error" + ", line " 
+             + err.getLineNumber () + ", uri " + err.getSystemId ());
+        System.out.println(" " + err.getMessage ());
+
+        }catch (SAXException e) {
+        Exception x = e.getException ();
+        ((x == null) ? e : x).printStackTrace ();
+
+        }catch (Throwable t) {
+        t.printStackTrace ();
+        }
+        //System.exit (0);
+		return null;
+
+		
+	}
+	
+	
+	
+	
 	public static Estado DameEstadoConNombre(ArrayList<Estado> estados, String nombre)
 	{
 		for(int i = 0; i<estados.size(); i++)
