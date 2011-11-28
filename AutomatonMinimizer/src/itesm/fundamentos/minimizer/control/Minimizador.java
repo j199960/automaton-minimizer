@@ -195,7 +195,7 @@ public class Minimizador {
 				for(int i = 0; i < valores.size(); i++)
 				{
 					String val = DameElId(arregloDeEnteros, valores.get(i));
-					if(!val.equals(tablaMini.get(result).get(i))&& !val.equals("id"))
+					if(!val.equals(tablaMini.get(result).get(i))&& !val.startsWith("or"))
 					{
 						System.out.println("ERROR Minimizacion fallo!...");
 					}
@@ -211,6 +211,8 @@ public class Minimizador {
 					String val = DameElId(arregloDeEnteros, valores.get(i));
 					if(val.startsWith("or"))
 					{
+						val = val.substring(val.lastIndexOf('r')+1);
+						
 						estadosOriginalesADesarrollar.add(val);
 //						id++;
 //						val = String.valueOf(id);
@@ -226,12 +228,20 @@ public class Minimizador {
 		{
 			for(int ori = 0; ori < estadosOriginalesADesarrollar.size(); ori++)
 			{
-				Estado e = automata.DameEstados().get(ori);
+				Estado e = automata.DameEstados().get(Integer.valueOf(estadosOriginalesADesarrollar.get(ori)));
+				ArrayList<String> tp = new ArrayList<String>();
 				for(int alf = 0; alf < automata.DameTamanoAlfateto(); alf++)
 				{
-					
+					Transicion t = e.dameTransicion(automata.DameAlfabeto().get(alf));
+					if(t.dameEstadosDestinos().size() == 1)
+					{
+						int ir = automata.DameEstados().indexOf(t.dameEstadosDestinos().get(0));
+						String strid = DameElId(arregloDeEnteros, String.valueOf(ir));
+						tp.add(strid);
+					}
 					
 				}
+				tablaMini.put(estadosOriginalesADesarrollar.get(ori), tp);
 			}
 			//Estado e = automata.DameEstados().indexOf(o)
 		}
@@ -251,18 +261,19 @@ public class Minimizador {
 			estados.add(tempE);
 			
 			ArrayList<String> estadoDestino = elemento.getValue();
-			for(int iDestino = 0; iDestino < estadoDestino.size(); iDestino++)
+			/*for(int iDestino = 0; iDestino < estadoDestino.size(); iDestino++)
 			{
 				String idDest = DameElId(arregloDeEnteros, estadoDestino.get(iDestino));
 				Estado tmp = Utils.DameEstadoConNombre(estados, idDest);
 				tempE.agregaTransicion(new Transicion (alfabeto.get(iDestino), tmp));
 				
-			}
+			}*/
 		}
 		
 		//Luego lleno transiciones		
 		for (Map.Entry<String, ArrayList<String>> elemento : tablaMini.entrySet()) 
-		{	
+		{
+			tempE = Utils.DameEstadoConNombre(estados, elemento.getKey());
 			ArrayList<String> estadoDestino = elemento.getValue();
 			for(int iDestino = 0; iDestino < estadoDestino.size(); iDestino++)
 			{
@@ -333,6 +344,10 @@ public class Minimizador {
 		{
 			int result = Integer.valueOf(split[0]);
 			resultado1 = String.valueOf(arregloDeEnteros[result]);
+			if(Integer.valueOf(resultado1) == 0)
+			{
+				resultado1 = split[0];
+			}
 			return resultado1;
 		}
 	
@@ -353,7 +368,7 @@ public class Minimizador {
 		{
 			if(cmp1 == 0)
 			{
-				resultado1 = split[0];
+				resultado1 = "or" + split[0];
 				//resultado1 = "id";
 			}
 		}
