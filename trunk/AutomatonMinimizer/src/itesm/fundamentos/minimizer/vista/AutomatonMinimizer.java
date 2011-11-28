@@ -19,7 +19,8 @@ public class AutomatonMinimizer {
 	 */
 	public static void main(String[] args) {
 		
-		Automata automataInicial = Utils.ParseFromJflapFormat(args[0]);
+		//Automata automataInicial = Utils.ParseFromJflapFormat(args[0]);
+		Automata automataInicial = Utils.ParseFromJflapFormatConTransicionesSeparadas(args[0]);
 		
 		if(!Clasificador.EsDeterminista(automataInicial))
 		{
