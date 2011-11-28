@@ -13,14 +13,14 @@ public class Transicion {
 	{
 		
 		this.estimulo = estimulo;
-		this.estadosDestino = new ArrayList<Estado>();
-		this.estadosDestino.add(estadoDestino);
+        this.estadosDestino = new ArrayList<Estado>();
+        this.estadosDestino.add(estadoDestino);
 	}
 	
 	/*
 	 *  Constructor para el caso de varios casos destino
 	 */
-	public Transicion(String estimulo, ArrayList<Estado> estadosDestino)
+	public Transicion(String estimulo, ArrayList<Estado>  estadosDestino)
 	{
 		this.estimulo = estimulo;
 		this.estadosDestino = estadosDestino;
