@@ -284,6 +284,17 @@ public class Minimizador {
 		}
 		int tamanoEstadosOr = estadosOriginalesADesarrollar.size();
 		ArrayList<String> nuevosADesarrollar = new ArrayList<String>();
+		
+		int eInit = automata.DameEstados().indexOf(automata.DameElEstadoInicial());
+		if(arregloDeEnteros[eInit] == 0)
+		{
+			if(!estadosOriginalesADesarrollar.contains(String.valueOf(eInit)))
+			{
+				estadosOriginalesADesarrollar.add(String.valueOf(eInit));
+				
+			}
+		}
+		
 		boolean again = true;
 		while(again == true)
 		{	
