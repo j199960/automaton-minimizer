@@ -79,6 +79,7 @@ public class Clasificador {
 					 //
 					 esAutomataDeterminista = false;
 					 System.out.println("Este automata tiene una transicion E ... por lo tanto es No determinista ");
+					 automata.setTransicionE(true);
 					 break;
 				 }
 				 
@@ -127,5 +128,92 @@ public class Clasificador {
 		 System.out.println("<< EsDeterminista");
 		 
 		 return esAutomataDeterminista ; 
+	}
+	
+	public static Automata quitaTransicionesE (Automata automataConE)
+	{
+		
+		ArrayList<Estado> estadosEpsilon = null;
+		
+		obtieneListaVacios (automataConE.DameEstados());
+		
+		
+		
+		return automataConE;
+	}
+	
+	private static ArrayList<Estado> obtieneListaVacios (ArrayList<Estado> estados)
+	{
+		ArrayList<Estado> estadosEpsilon = new ArrayList<Estado>();
+		Estado nuevoEstado = null;
+		ArrayList <Estado> edoDestinos = null;
+		
+		for (int x = 0; x< estados.size(); x++)
+		{
+			Estado estado = estados.get(x);
+			nuevoEstado = new Estado(estado.dameNombre());
+			boolean existenTransicionesE = false;
+		
+			
+			System.out.println(" Estado :  " + nuevoEstado.dameNombre());
+
+			
+			ArrayList<Transicion> transiciones = estado.dameTransiciones();
+			
+			for (int y = 0; y < transiciones.size(); y++)
+			{
+				Transicion transicion = transiciones.get(y);
+				edoDestinos = new ArrayList<Estado> ();
+				
+				if (transicion.dameEstimulo() == "E")
+				{
+					ArrayList<Estado> edoDestinosIter = transicion.dameEstadosDestinos();
+					
+					for (int z = 0 ; z < edoDestinosIter.size(); z++)
+					{
+						System.out.println("Estado de transicion de E es " + edoDestinosIter.get(z).dameNombre());
+						
+						
+						edoDestinos.add(edoDestinosIter.get(z));
+						existenTransicionesE = true;
+					}
+				}
+				else
+				{
+					//
+					// Este estado no tiene transiciones E
+					//
+				}
+			}
+			
+			if ( existenTransicionesE== true )
+			{
+				nuevoEstado.agregaTransicion(new Transicion("E", edoDestinos));
+				estadosEpsilon.add(nuevoEstado);
+				existenTransicionesE = false;
+			}
+				
+			
+		}
+		
+		return estadosEpsilon;
+	}
+	
+	private static ArrayList <Estado> obtieneListaEpsilon (ArrayList <Estado> estados)
+	{
+		for (int x = 0 ; x< estados.size() ; x++)
+		{
+			Estado estado = estados.get(x);
+			System.out.println(" Estado :  " + estado.dameNombre());
+			
+			//
+			// se usa get(0) porque solo tendira una transicion E
+			// a diferentes estados...
+			Transicion transicion = estado.dameTransiciones().get(0);
+			
+			//for (int y = 0; )
+
+		}
+		return estados;
 	}
 }
