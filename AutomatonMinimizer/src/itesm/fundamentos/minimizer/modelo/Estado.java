@@ -14,6 +14,7 @@ public class Estado {
 		this.nombre = nombre;
 		this.transiciones = new ArrayList<Transicion>();
 	}
+
 	
 	/*
 	 * Metodo para agregar transiciones a un estado construido
@@ -37,7 +38,32 @@ public class Estado {
 		return this.nombre;
 	}
 	
-	
+	public void remueveTransiciones(String simbolo)
+	{
+		ArrayList<Transicion> transiciones = this.dameTransiciones();
+		
+		//System.out.println(" numero de transiciones " + transiciones.size() );
+
+		
+		for (int x = 0 ; x<transiciones.size();x++)
+		{
+			Transicion transicion = transiciones.get(x);
+			
+			if (transicion.dameEstimulo()==simbolo)
+			{
+				//
+				//  Se va a remover la transicion con el simbolo enviado
+				//
+				//System.out.println("Se borrara la transicion con simbolo " + simbolo );
+				transiciones.remove(x);
+			}
+		}
+		
+	//	System.out.println(" numero de transiciones " + transiciones.size() );
+
+
+	}
+
 	public ArrayList<Estado> dameElSiguientesEstados(String estimulo)
 	{
 		for(int i = 0; i < this.transiciones.size(); i++)
@@ -61,7 +87,48 @@ public class Estado {
 		}
 		return null;
 	}
+
+
 	
+	public void imprimeEstado()
+	{
+		ArrayList<Transicion> transiciones = this.dameTransiciones();
+		
+		System.out.println(" ------------------- ");
 
 
+		
+		for (int x = 0 ; x<transiciones.size();x++)
+		{
+			Transicion transicion = transiciones.get(x);
+			
+			System.out.println(transicion.dameEstimulo() + " ->");
+			
+			for (int z = 0 ; z<transicion.dameEstadosDestinos().size() ; z++)
+			{
+				System.out.println(transicion.dameEstadosDestinos().get(z).dameNombre());
+				
+				
+				//descomentar este ciclo jodido si tienes duda de las transiciones internas...
+				/*System.out.println(" Dentro de transiciones ");
+				
+				Estado est = transicion.dameEstadosDestinos().get(z);
+				
+				for (int w = 0 ; w < est.dameTransiciones().size(); w++)
+				{
+					Transicion tran = est.dameTransiciones().get(w);
+					for (int u = 0 ; u< tran.dameEstadosDestinos().size(); u++)
+					{
+						System.out.println("Nombre estado destino "+ tran.dameEstadosDestinos().get(u).dameNombre());
+					}
+					
+				}*/
+			
+			}
+		}
+		System.out.println(" ==========  ");
+
+	}
+	
+	
 }
