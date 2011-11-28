@@ -50,6 +50,18 @@ public class Estado {
 		return null;
 	}
 	
+	public Transicion dameTransicion(String estimulo)
+	{
+		for(int i   = 0; i<transiciones.size(); i++)
+		{
+			if(transiciones.get(i).dameEstimulo().equalsIgnoreCase(estimulo))
+			{
+				return transiciones.get(i);
+			}
+		}
+		return null;
+	}
+	
 
 
 }

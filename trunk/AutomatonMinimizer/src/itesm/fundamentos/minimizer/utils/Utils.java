@@ -1,7 +1,8 @@
-package itesm.fundamentos.minimizer.vista;
+package itesm.fundamentos.minimizer.utils;
+
+
 import java.util.ArrayList;
 import java.io.File;
-import org.w3c.dom.Document;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,90 +10,16 @@ import javax.xml.parsers.DocumentBuilder;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException; 
 import itesm.fundamentos.minimizer.modelo.*;
-import itesm.fundamentos.minimizer.control.*;
-import itesm.fundamentos.minimizer.utils.*;
 
-public class AutomatonMinimizer {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		Utils.ParseFromJflapFormat(args[0]);
-		
-		/*
-		System.out.println("Construyendo automata para expresion ab(a+b)*");
-	    ArrayList<Estado> estados = new ArrayList<Estado>();
-	    
-	    //---------------INICIA CONSTRUCCION DEL AUTOMATA--------//
-	    Estado q0 = new Estado("q0");
-	    Estado q1 = new Estado("q1");
-	    Estado q2 = new Estado("q2");
-	    Estado z = new Estado("z");
-	    q0.agregaTransicion(new Transicion("a", q1));
-	    q0.agregaTransicion(new Transicion("b", z));
-	   // q0.agregaTransicion(new Transicion("a", q1));
-	   // q0.agregaTransicion(new Transicion("b", q1));
-	    
-	    q1.agregaTransicion(new Transicion("b", q2));
-	    q1.agregaTransicion(new Transicion("a", z));
-	    q2.agregaTransicion(new Transicion("a", q2));
-	    q2.agregaTransicion(new Transicion("b", q2));
-	    
-	    z.agregaTransicion(new Transicion("a", z));
-	    z.agregaTransicion(new Transicion("b", z));
-	    
-	    //Listo ya generamos las conexiones, ahora a generar el automata
-	    estados.add(q0);
-	    estados.add(q1);
-	    estados.add(q2);
-	    estados.add(z);
-	    
-	    ArrayList<String> alfabeto = new ArrayList<String>();
-	    alfabeto.add("a");
-	    alfabeto.add("b");
-	    
-	    // RJUA
-	    // TODO. Crear una funcion cargarAutomata la cual cargara
-	    // los valores de automatas desde un archivo y creara el objeto
-	    // en tiempo de ejecucion.
-	    //
-	    
-	    
-	    Automata automata = new Automata(estados, alfabeto, q0,q2);
-	    System.out.println("Automata construido!...");
-	    
-	  //---------------FIN CONSTRUCCION DEL AUTOMATA--------//
-
-	    //1.- Clasificamos si es determinista
-	    boolean esAFD = Clasificador.EsDeterminista(automata);
-	    //2.- Si no es AFD tenemos que convertirlo
-	    if(!esAFD)
-	    {	
-	    	System.out.println(" El automata es NO determinista ");
-	    	automata = Convertidor.ConvierteloADeterminista(automata);
-	    }
-	    else
-	    {
-	    	System.out.println(" El automata es determinista ");
-	    }
-	    //3.-Ya convertido a AFD tenemos que minimizarlo
-	    
-	    Minimizador minimizador = new Minimizador(automata);
-	    automata = minimizador.Minimiza();
-	    
-	    */
-	    
-	    
-	    /*
-	     
-	     
+public class Utils {
+	
+	public static Automata ParseFromJflapFormat(String fileName)
+	{
 		try {
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse (new File("C:\\temp\\gigante.xml"));
+            Document doc = docBuilder.parse (new File(fileName));
             ArrayList<Estado> estados = new ArrayList<Estado>();
             ArrayList<Transicion> transiciones = new ArrayList<Transicion>();
             String nombreEstadoInicial = null;
@@ -209,21 +136,21 @@ public class AutomatonMinimizer {
             			
             		}
             		
-         */   		
+            		
             		/*
             		e1.dameTransicion(estimulo);
             		*/
             		
             		
           
-	}
+            		 
             		
             		
             		
             		
-            		//int i = t+2;
+            		int i = t+2;
             		
-           /* 		
+            		
             	}
             }
             
@@ -238,6 +165,8 @@ public class AutomatonMinimizer {
             
             ImprimeAutomata(automata);
             
+            return automata;
+            
                     }catch (SAXParseException err) {
         System.out.println ("** Parsing error" + ", line " 
              + err.getLineNumber () + ", uri " + err.getSystemId ());
@@ -251,9 +180,12 @@ public class AutomatonMinimizer {
         t.printStackTrace ();
         }
         //System.exit (0);
+		return null;
+
+		
 	}
 	
-	private static Estado DameEstadoConNombre(ArrayList<Estado> estados, String nombre)
+	public static Estado DameEstadoConNombre(ArrayList<Estado> estados, String nombre)
 	{
 		for(int i = 0; i<estados.size(); i++)
 		{
@@ -266,7 +198,7 @@ public class AutomatonMinimizer {
 		return null;
 	}
 	
-	private static void ImprimeAutomata(Automata automata)
+	public static void ImprimeAutomata(Automata automata)
 	{
 		System.out.println("Imprimiendo automata...");
 		System.out.println("    Imprimiendo alfabeto...");
@@ -287,6 +219,6 @@ public class AutomatonMinimizer {
 				}
 			}
 		}	
-	}*/
+	}
 
 }
