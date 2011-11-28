@@ -19,7 +19,7 @@ public class AutomatonMinimizer {
 	 */
 	public static void main(String[] args) {
 		
-		Automata automataInicial = Utils.ParseFromJflapFormat("C:\\temp\\gigante2.xml");
+		Automata automataInicial = Utils.ParseFromJflapFormat("C:\\temp\\Tarea4_c.xml");
 		
 //		automataInicial.imprimeAutomata();
 		

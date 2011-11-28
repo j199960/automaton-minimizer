@@ -148,5 +148,10 @@ public class Estado {
 
 	}
 	
+	public void renombra(String nuevoNombre)
+	{
+		this.nombre = nuevoNombre;
+	}
+	
 	
 }

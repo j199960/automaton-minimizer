@@ -208,6 +208,7 @@ public class Utils {
 	
 	public static void CreateJFlapFormat(String fileName, Automata automata)
 	{
+		automata = limpiaAutomata(automata);
 		try
 		{
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -345,6 +346,25 @@ public class Utils {
 				}
 			}
 		}	
+	}
+	
+	private static Automata limpiaAutomata(Automata automata)
+	{
+		for(int j= 0; j<automata.DameEstados().size(); j++)
+		{
+			Estado tmp = automata.DameEstados().get(j);
+			tmp.renombra(String.valueOf(j));
+			for(int k = 0; k < automata.DameEstados().get(j).dameTransiciones().size(); k++)
+			{
+				for(int indiceSig = 0; indiceSig<automata.DameEstados().get(j).dameTransiciones().get(k).dameEstadosDestinos().size(); indiceSig++)
+				{
+					Estado tmp2 = automata.DameEstados().get(j).dameTransiciones().get(k).dameEstadosDestinos().get(indiceSig);
+					tmp2.renombra(String.valueOf(automata.DameEstados().indexOf(tmp2)));
+				}
+			}
+		
+		}
+		return automata;
 	}
 
 }
