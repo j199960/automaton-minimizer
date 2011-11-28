@@ -170,6 +170,8 @@ public class Utils {
             }
             Automata automata = new Automata(estados, alfabeto, inicial, estadosFinales);
             
+            automata = renombraALetras(automata);
+            
             ImprimeAutomata(automata);
             
             return automata;
@@ -297,7 +299,7 @@ public class Utils {
 			//st.appendChild(document.createAttribute("name"));
 			
 			//Node tr = document.createElement("transition");
-			//am.appendChild(tr);
+			//am.append-Child(tr);
 			
 			
 			
@@ -360,6 +362,29 @@ public class Utils {
 				{
 					Estado tmp2 = automata.DameEstados().get(j).dameTransiciones().get(k).dameEstadosDestinos().get(indiceSig);
 					tmp2.renombra(String.valueOf(automata.DameEstados().indexOf(tmp2)));
+				}
+			}
+		
+		}
+		return automata;
+	}
+	
+	private static Automata renombraALetras(Automata automata)
+	{
+		for(int j= 0; j<automata.DameEstados().size(); j++)
+		{
+			Estado tmp = automata.DameEstados().get(j);
+			char[] charArray = new char[1];
+			charArray[0] = (char)(j + 65);
+			tmp.renombra(new String(charArray));
+			for(int k = 0; k < automata.DameEstados().get(j).dameTransiciones().size(); k++)
+			{
+				for(int indiceSig = 0; indiceSig<automata.DameEstados().get(j).dameTransiciones().get(k).dameEstadosDestinos().size(); indiceSig++)
+				{
+					Estado tmp2 = automata.DameEstados().get(j).dameTransiciones().get(k).dameEstadosDestinos().get(indiceSig);
+					char[] charArray2 = new char[1];
+					charArray2[0] = (char)(automata.DameEstados().indexOf(tmp2) + 65);
+					tmp2.renombra(new String(charArray2));
 				}
 			}
 		
