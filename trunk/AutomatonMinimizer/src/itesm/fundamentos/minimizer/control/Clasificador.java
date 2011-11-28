@@ -135,11 +135,224 @@ public class Clasificador {
 		
 		ArrayList<Estado> estadosEpsilon = null;
 		
-		obtieneListaVacios (automataConE.DameEstados());
+		ArrayList<Estado> estadosConVacio = null;
 		
+		estadosConVacio = obtieneListaVacios (automataConE.DameEstados());
+		
+		estadosEpsilon = obtieneListaEpsilon (estadosConVacio);
+		
+		//
+		// En este punto sabemos las transiciones vacias y ademas la conversion Epsilon...
+ 		// ahora sigue identificar de cada estado dentro de Epsilon a que estado 
+		// se van con determinado simbolo.
+		//
+		for (int y = 0 ; y< estadosEpsilon.size(); y++)
+		{
+			Estado estado = estadosEpsilon.get(y);
+			
+			for (int x = 0; x < automataConE.DameAlfabeto().size(); x ++)
+			{
+				//
+				// listaEpsilonDestino  guarda todos los estados destinos de las transiciones Epsilon
+				//
+				ArrayList <Estado> listaEpsilonDestino = null;
+				
+				ArrayList <Estado> obtenTrancisionesAgregar = null;
+
+				String simbolo = automataConE.DameAlfabeto().get(x);
+				
+				listaEpsilonDestino= obtenTransicionesPorSimbolo (estado, simbolo, automataConE);
+				
+				//
+				// Ahora que se tiene la lista de transiciones Destino de Epsilon.. a ver a ver
+				// sus transiciones originales a donde van... con esto ya se podra ver cuales serian las
+				// transiciones adicionales a agregar.
+				//
+				
+				obtenTrancisionesAgregar = obtenTranscionesAgregar (listaEpsilonDestino, estadosEpsilon);
+				
+				if(obtenTrancisionesAgregar != null )
+				{
+					modificaTransiciones(estado, obtenTrancisionesAgregar, simbolo, automataConE);
+				}
+
+			}
+			borraTransicionesE (estado,automataConE);
+			
+		}
 		
 		
 		return automataConE;
+	}
+	private static void borraTransicionesE(Estado estado, Automata automata)
+	{
+		Estado estadoAutomata = automata.dameElEstado(estado.dameNombre());
+
+		ArrayList<Transicion> transiciones = estadoAutomata.dameTransiciones();
+		
+		for (int x = 0; x< estadoAutomata.dameTransiciones().size(); x++)
+		{
+			Transicion transicion = estadoAutomata.dameTransiciones().get(x);
+			if (transicion.dameEstimulo() == "E")
+			{
+				estadoAutomata.dameTransiciones().remove(x);
+			}
+		}
+	}
+	
+	private static void modificaTransiciones(Estado estado, ArrayList<Estado> estadosAgregar, String simbolo, Automata automata)
+	{
+		
+		Estado estadoAutomata = automata.dameElEstado(estado.dameNombre());
+		boolean repetido = true;
+		
+		for (int y = 0; y < estadosAgregar.size() ; y++)
+		{
+			
+			repetido = estadoAutomata.buscaEstadoEnTransiciones (estadosAgregar.get(y), simbolo);
+			if (repetido  == false)
+			{
+				estadoAutomata.agregaTransicion(new Transicion (simbolo, estadosAgregar.get(y)));
+		
+			}
+			else
+			{
+				System.out.println("ModificaTransiciones : ya se contiene el estado "+ estadosAgregar.get(y).dameNombre());
+			}
+		}
+		
+	}
+	private static ArrayList<Estado> obtenTranscionesAgregar (ArrayList<Estado> listaEpsilonDestino, ArrayList<Estado> estadosEpsilon)
+	{
+		ArrayList<Estado> obtenTransicionesAgregar = new ArrayList<Estado> ();
+		
+		for (int x = 0 ; x < listaEpsilonDestino.size(); x ++)
+		{
+			Estado estadoEpsilon = listaEpsilonDestino.get(x);
+			
+			System.out.println("obtenTranscionesAgregar : El nombre del estado en Epsilon es " + estadoEpsilon.dameNombre());
+			
+			ArrayList <Estado> ListaEstadosDestino  = buscarEstadosDestino (estadoEpsilon.dameNombre(),estadosEpsilon);
+			
+			//
+			// si llegas hasta este punto y no lo encuentras en el destino.. quiere decir
+			// que NO hay una transicion vacia.. lo cual lo unico que indica es que
+			// tendras que ir a tu mismo estado...
+			//
+			if(ListaEstadosDestino == null || ListaEstadosDestino.isEmpty())
+			{
+				System.out.println("obtenTranscionesAgregar : El estado destino tiene transiciones vacias. Agregate a ti mismo");
+				if(obtenTransicionesAgregar.contains(estadoEpsilon) == false)
+				{
+					obtenTransicionesAgregar.add(estadoEpsilon);
+				}
+
+			}
+			else
+			{
+				for (int z = 0; z< ListaEstadosDestino.size(); z++)
+				{
+					obtenTransicionesAgregar.add(ListaEstadosDestino.get(z));
+				}
+			}
+			//obtenTransicionesAgregar. = ListaEstadoDestino;
+			
+			System.out.println ("haz tiempo");
+			
+		}
+		
+		
+		return obtenTransicionesAgregar;
+	}
+	private static ArrayList<Estado> buscarEstadosDestino(String nombre, ArrayList<Estado> estados)
+	{
+		ArrayList <Estado> estadosDestino = new ArrayList<Estado> ();
+		Estado destinoEpsilon = buscarEstadoEnArreglo (nombre, estados);
+		
+		if (destinoEpsilon !=null )
+		{
+			Transicion transicion = destinoEpsilon.dameTransiciones().get(0);
+			
+			
+			for ( int x = 0 ; x< transicion.dameEstadosDestinos().size(); x++)
+			{
+				Estado estado = transicion.dameEstadosDestinos().get(x);
+				
+				System.out.println("buscarEstadosDestino : nombre estado " + estado.dameNombre());
+				
+				estadosDestino.add(estado);
+			}
+		}
+		
+		return estadosDestino;
+	}
+	
+	private static Estado buscarEstadoEnArreglo(String nombre, ArrayList<Estado> estados)
+	{
+		Estado estado = null;
+		
+		for (int x =0; x<estados.size(); x++)
+		{
+			//
+			// primero checar sino esta separado por comas
+			// ejem q0,q1
+			//
+			if (nombre.contentEquals(estados.get(x).dameNombre()))
+			{
+				System.out.println(" buscarEstadoEnArreglo(): Estado encontrado : " + nombre);
+				estado = estados.get(x);
+				break;
+			}
+		
+					
+		}
+		
+		return estado;	
+	}
+	private static ArrayList<Estado> obtenTransicionesPorSimbolo (Estado estadoEpsilon, String simbolo, Automata automata)
+	{
+		Transicion transicion = estadoEpsilon.dameTransicion("E");
+		ArrayList<Estado> listaDeEstadosDestino = new ArrayList <Estado> ();
+		
+		if(transicion == null)
+		{
+			System.out.println("obtenTransicionesPorSimbolo : ERROR : La transicion es nula");
+		}
+		
+		for (int x = 0 ; x<transicion.dameEstadosDestinos().size(); x++)
+		{
+			ArrayList<Estado> estadosDestino = transicion.dameEstadosDestinos();
+			
+			for (int y = 0 ; y< estadosDestino.size(); y++)
+			{
+				Estado estado = estadosDestino.get(y);
+				
+				System.out.println("obtenTransicionesPorSimbolo : El estado destino es : " + estado.dameNombre());
+				
+				Estado edoDestino = automata.dameEstadoDestino(estado.dameNombre(), simbolo);
+				if(edoDestino != null)
+				{
+					
+				
+					if (listaDeEstadosDestino.contains(edoDestino) == false)
+					{
+						listaDeEstadosDestino.add(edoDestino);
+					}
+					else
+					{
+						System.out.println("obtenTransicionesPorSimbolo : La lista destino ya contiene : " + edoDestino.dameNombre());
+	
+					}
+				}
+				else
+				{
+					System.out.println("obtenTransicionesPorSimbolo : no se encontro estado destino");
+
+				}
+			}
+		}
+		return listaDeEstadosDestino;
+		
 	}
 	
 	private static ArrayList<Estado> obtieneListaVacios (ArrayList<Estado> estados)
@@ -154,10 +367,7 @@ public class Clasificador {
 			nuevoEstado = new Estado(estado.dameNombre());
 			boolean existenTransicionesE = false;
 		
-			
-			System.out.println(" Estado :  " + nuevoEstado.dameNombre());
 
-			
 			ArrayList<Transicion> transiciones = estado.dameTransiciones();
 			
 			for (int y = 0; y < transiciones.size(); y++)
@@ -171,7 +381,9 @@ public class Clasificador {
 					
 					for (int z = 0 ; z < edoDestinosIter.size(); z++)
 					{
-						System.out.println("Estado de transicion de E es " + edoDestinosIter.get(z).dameNombre());
+						System.out.println("obtieneListaVacios:  Estado :  " + nuevoEstado.dameNombre());
+
+						System.out.println("obtieneListaVacios: Estado de transicion de E es " + edoDestinosIter.get(z).dameNombre());
 						
 						
 						edoDestinos.add(edoDestinosIter.get(z));
@@ -204,12 +416,29 @@ public class Clasificador {
 		for (int x = 0 ; x< estados.size() ; x++)
 		{
 			Estado estado = estados.get(x);
-			System.out.println(" Estado :  " + estado.dameNombre());
+			System.out.println("obtieneListaEpsilon: Estado :  " + estado.dameNombre());
 			
 			//
 			// se usa get(0) porque solo tendira una transicion E
 			// a diferentes estados...
 			Transicion transicion = estado.dameTransiciones().get(0);
+			
+			for (int y = 0; y < transicion.dameEstadosDestinos().size(); y ++)
+			{
+				Estado edoDestino = transicion.dameEstadosDestinos().get(y);
+				
+				System.out.println("obtieneListaEpsilon: Estado destino :  " + edoDestino.dameNombre());
+				
+				//
+				// Por default en una transicion Epsilon se debe incluir el mismo estado
+				//
+
+			}
+			
+			transicion.dameEstadosDestinos().add(estado);
+
+			
+			
 			
 			//for (int y = 0; )
 
