@@ -28,17 +28,23 @@ public class Minimizador {
 	
 	public  Automata Minimiza() 
 	{
-		CreaLaTabla();
-		
-		EliminaEstados();
-		
-		ConstruyeAutomata();
+		try
+		{
+			CreaLaTabla();
 			
+			EliminaEstados();
+			
+			ConstruyeAutomata();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return automataFinal;
 	}
 
 	
-	private void CreaLaTabla()
+	private void CreaLaTabla() throws Exception
 	{
 		ArrayList<String> temporal;
 		
@@ -76,12 +82,31 @@ public class Minimizador {
 					
 					ArrayList<Estado> estadosDestino2 = estado2.dameElSiguientesEstados(this.automata.DameAlfabeto().get(alfabeto));
 					
+					if(estadosDestino1 == null)
+					{
+						throw new Exception("El estado " + estado1.dameNombre() + " no tiene estado destino para la transicion " + this.automata.DameAlfabeto().get(alfabeto));
+					}
+					if(estadosDestino2 == null)
+					{
+						throw new Exception("El estado " + estado2.dameNombre() + " no tiene estado destino para la transicion " + this.automata.DameAlfabeto().get(alfabeto));
+					}
+					
 					//if(estadosDestino1 == null || estadosDestino1.size() != 1)
 					//	throw new Exception("Automata tiene varios estados destino o es nulo");
 					
 					//A este punto tenemos el estado de cada uno
 					String destino1 = String.valueOf(this.automata.DameEstados().indexOf(estadosDestino1.get(0)));
+					if(destino1.equals("-1"))
+					{
+						System.out.println("El estado destino " + estadosDestino1.get(0).dameNombre() + " no se encontro en el arreglo");
+						//throw new Exception("El estado destino " + estadosDestino1.get(0) + " no se encontro en el arreglo");
+					}
 					String destino2 = String.valueOf(this.automata.DameEstados().indexOf(estadosDestino2.get(0)));
+					if(destino2.equals("-1"))
+					{
+						System.out.println("El estado destino " + estadosDestino2.get(0).dameNombre() + " no se encontro en el arreglo");
+						//throw new Exception("El estado destino " + estadosDestino2.get(0) + " no se encontro en el arreglo");
+					}
 					temporal.add(destino1 + "," + destino2);
 				}
 				this.tablaInicial.put(estado, temporal);
