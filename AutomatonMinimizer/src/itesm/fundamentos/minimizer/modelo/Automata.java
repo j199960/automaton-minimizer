@@ -193,12 +193,26 @@ public class Automata {
 			
 			for (int y = 0; y<estados.size(); y++)
 			{
-				System.out.println(" RJUA : dameTransicionesPorNombre () "+ estados.get(y).dameNombre());
+				System.out.println(" dameTransicionesPorNombre () "+ estados.get(y).dameNombre());
 
 				
 				Estado estadoDestino = dameEstadoDestino (estados.get(y).dameNombre(), simbolo);
 				
-				System.out.println(" RJUA : dameTransicionesPorNombre () : con simbolo : "+ simbolo +" el estado destino es "+estadoDestino.dameNombre() );
+				if (estadoDestino == null)
+				{
+					System.out.println("dameTransicionesPorNombre : esto es nulo.. muy muy mal") ; 
+					
+					//
+					// chequemos si es una transicion nulla... en ocasiones puede psar y su destion seria el mismo
+					//
+					if (estado.dameNombre().equals("Z"))
+					{
+						
+						estadoDestino = estado;
+					}
+				}
+				
+				System.out.println("  dameTransicionesPorNombre () : con simbolo : "+ simbolo +" el estado destino es "+estadoDestino.dameNombre() );
 				
 				//Estado estadoEnAutomata = dameElEstado(estadoDestino.dameNombre());
 				
