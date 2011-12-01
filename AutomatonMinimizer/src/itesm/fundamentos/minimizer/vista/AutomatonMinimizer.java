@@ -34,7 +34,7 @@ public class AutomatonMinimizer {
 		Minimizador m = new Minimizador(automataInicial);
 		Automata automatafinal = m.Minimiza();
 		
-		Utils.CreateJFlapFormat(args[0], automatafinal);
+		Utils.CreateJFlapFormat(args[0] + ".min", automatafinal);
 		
 	}
 
