@@ -366,14 +366,14 @@ public class Clasificador {
 			Estado estado = estados.get(x);
 			nuevoEstado = new Estado(estado.dameNombre());
 			boolean existenTransicionesE = false;
-		
+			edoDestinos = new ArrayList<Estado> ();
+
 
 			ArrayList<Transicion> transiciones = estado.dameTransiciones();
 			
 			for (int y = 0; y < transiciones.size(); y++)
 			{
 				Transicion transicion = transiciones.get(y);
-				edoDestinos = new ArrayList<Estado> ();
 				
 				if (transicion.dameEstimulo() == "E")
 				{
