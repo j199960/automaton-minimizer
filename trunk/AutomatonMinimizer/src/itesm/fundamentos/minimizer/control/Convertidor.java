@@ -622,7 +622,7 @@ public class Convertidor {
 						
 						Transicion transicion = transiciones.get(y);
 						
-						if (simbolo.equals( transicion.dameEstimulo()) || estado.dameNombre().length() >1 )
+						if (simbolo.equals( transicion.dameEstimulo()) || estado.dameNombre().length() > 1 )
 						{
 						
 							ArrayList<Estado> estadosDestino = transicion.dameEstadosDestinos();
