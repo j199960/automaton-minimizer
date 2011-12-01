@@ -349,6 +349,7 @@ public class Utils {
         t.printStackTrace ();
         }
         //System.exit (0);
+		//automata = renombraALetras(automata);
 		return null;
 
 		
